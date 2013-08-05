@@ -1,0 +1,100 @@
+This is the README file for
+
+   vcsadump - Linux virtual console color snapshot tool
+   (C) 2003 Florian <petafrog@yahoo.com>
+
+0. Disclaimer
+
+   This program is free software; you can redistribute it and/or modify it
+   under the terms of the GNU General Public License as published by the Free
+   Software Foundation; either version 2 of the License, or (at your option)
+   any later version.
+
+   This program is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+   for more details.
+
+   You should have received a copy of the GNU General Public License along
+   with this program; if not, write to the Free Software Foundation, Inc., 59
+   Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+1. Compilation
+
+   Go "make".
+
+   Optionally, go "make colortest" to compile a small test program to display
+   all possible color combinations in a terminal.  colortest requires the
+   ncurses library and headers to compile.
+
+2. Installation
+
+   Become root and go "make install".  This will install vcsadump in the
+   directory specified in the Makefile, /usr/local/bin by default.  If you
+   wish to allow non-root users to use vcsadump, see section 4 below.
+
+3. Usage
+
+   To make a console dump, a user must have read permission for the relevant
+   /dev/vcsa* device, or vcsadump must be installed with appropriate
+   permissions to enable read access to the device.
+
+   vcsadump can generate three kinds of dumps:
+
+   - Single HTML file with inline color attributes included in the HTML
+     <HEAD> section (option -h).
+
+   - Single HTML file referring to external CSS containing all possible color
+     attributes.  This may be useful if you want to adjust the colors from
+     the default (option -e).
+
+   - HTML fragment with only the screen dump.  This may be useful for
+     embedding inside another HTML pages, giving better control over the page
+     layout.  You will need to provide the required attributes for color
+     display on the page, either by linking to an external CSS, or by
+     embedding the styles in the page (option -p)
+
+   vcsadump can also generate a CSS containing all possible attributes
+   (option -C).  In this case, no screen dump is done; only the CSS file is
+   generated.
+
+   The following aspects of vcsadump's behavior can be further controlled
+   with options:
+
+   - The virtual console to capture can be set with the -v option.  The
+     default is to capture the current virtual console (/dev/vcsa).
+
+   - The name of the HTML output file can be set with the -o option.  Using
+     "-" for a filename causes output to be directed to stdout.
+
+   - The name of the external CSS file can be set with the -c option.  Using
+     "-" for a filename causes output to be directed to stdout.
+
+4. Installation with setuid/setgid bit sed
+
+   On many systems, it is not good policy to allow dumping of arbitrary
+   virtual consoles by non-root users.  However, under some circumstances,
+   such as when you are the only person using the system, you may wish to
+   enable this for convenience.
+
+   If you wish to enable non-root users to use vcsadump, you need to set the
+   ownerships and permission bits appropriately.  For example, on a Red Hat 9
+   system the /dev/vcsa files have permissions that look like this:
+
+   crw--w----    1 vcsa     tty        7, 128 Jan 30 04:24 /dev/vcsa
+
+   I.e. only the user vcsa can read the device.  Thus ownership of vcsadump
+   must be assigned to vcsa, and the setuid bit set.  Now anyone who can
+   execute vcsadump can use it to dump the contents of any virtual console.
+   To determine who can execute vcsadump, you need to set the group ownership
+   and execute permissions appropriately.
+
+   For example, if you have a group "trusted" on your host, of which trusted
+   users are members, set the group ownership of vcsadump to "trusted" and
+   the file permissions to 4110.
+
+   If you are the only user on a Red Hat machine, you can simply set the
+   group to your username, which is also the name of a special group Red Hat
+   creates for each user, containing only that user.
+
+   Set the parameters in the Makefile, become root, and go "install-suid".
